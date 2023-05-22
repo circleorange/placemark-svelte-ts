@@ -7,7 +7,7 @@
   let errorMsg = "";
 
   async function login() {
-    console.log(`attempting to log in w/ emai;: ${email} and password: ${password}`);
+    console.log(`attempting to log in w/ email: ${email} and password: ${password}`);
     let success = await placemarkService.login(email, password);
     if (success) { goto("/dashboard") }
     else {

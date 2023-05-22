@@ -3,9 +3,7 @@
   import WelcomeNav from "$lib/WelcomeNav.svelte";
 </script>
 
-<Header>
-  <WelcomeNav />
-</Header>
+<Header><WelcomeNav /></Header>
 
 <div class="columns is-vcentered content">
   <div class="column has-text-centered">

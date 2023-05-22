@@ -1,4 +1,8 @@
+<script lang="ts">
+  import Icon from "@iconify/svelte";
+</script>
+
 <div class="box has-text-centered columns m-2">
-  <a href="/signup" class="column"><i class="fas fa-user-cog fa-3x" style="color:rgb(63, 160, 155)" /></a>
-  <a href="/login" class="column"><i class="fas fa-user-edit fa-3x" style="color:green" title="Sign In" /></a>
+  <a href="/signup" class="column"><Icon icon="mdi:register" width="64" /></a>
+  <a href="/login" class="column"><Icon icon="fa:sign-in" width="64" /></a>
 </div>

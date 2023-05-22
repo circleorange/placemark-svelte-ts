@@ -14,9 +14,9 @@ export interface LoggedInUser {
 
 export interface Category {
   type: string;
-  user: User;
-  POIs: POI[];
-  _id: string;
+  userid: string;
+  pois: POI[];
+  _id?: string;
 }
 
 export interface POI {
@@ -25,5 +25,5 @@ export interface POI {
   category: Category;
   lat: number;
   lng: number;
-  _id: string;
+  _id?: string;
 }
