@@ -1,10 +1,7 @@
 <script lang="ts">
   import { placemarkService } from "../../services/placemark-service";
-  import type { Category } from "../../services/placemark-types";
   import { categoryListStore, loggedInUser } from "../../stores";
-  import Coordinates from "$lib/Coordinates.svelte";
 
-  let confMsg = "New category has been created";
   let userInput = "";
 
   async function createCategory() {

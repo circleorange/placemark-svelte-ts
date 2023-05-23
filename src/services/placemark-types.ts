@@ -22,8 +22,7 @@ export interface Category {
 export interface POI {
   name: string;
   description: string;
-  category: Category;
-  lat: number;
-  lng: number;
+  latitude: number;
+  longitude: number;
   _id?: string;
 }

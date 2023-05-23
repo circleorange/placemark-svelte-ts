@@ -3,7 +3,7 @@
 	import { placemarkService } from "../../services/placemark-service";
   import type { Category } from "../../services/placemark-types";
   import Icon from "@iconify/svelte";
-	import { categoryListStore } from "../../stores";
+	import { categoryListStore, openedCategoryID } from "../../stores";
   import { goto } from "$app/navigation";
 
   export let categoryList: Category[] = [];
@@ -15,7 +15,10 @@
     categoryList = await placemarkService.getCategories();
   });
   
-  async function openCategory() {};
+  async function openCategory(categoryID: string) {
+    openedCategoryID.set(categoryID);
+    console.log("opened category ID:", openedCategoryID);
+  }
 
   async function deleteCategory(categoryID: string) {
     console.log("starting transaction to delete category w/ ID:", categoryID);
@@ -30,8 +33,8 @@
   
   // update page after new category created
   categoryListStore.subscribe(async (categories) => {
-    categoryList = categories;
     categoryList = await placemarkService.getCategories();
+    categoryList = categories;
   });
 </script>
 
@@ -39,7 +42,7 @@
   {#each categoryList as category}
   <div class="box box-link-hover-shadow">
     <h2 class="title">{category.type}</h2>
-    <a href="/dashboard/{category._id}" class="button" on:click={openCategory}>
+    <a href="/category" class="button" on:click={() => category._id && openCategory(category._id)}>
       <span class="icon is-small"><Icon icon="fluent:folder-open-20-filled" width="25"/></span>
       &emsp;View Points of Interest
     </a>

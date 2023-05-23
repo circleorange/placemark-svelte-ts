@@ -1,6 +1,6 @@
 import axios from "axios";
 import { loggedInUser, latestCategory, latestPOI } from "../stores";
-import type { responseCategory, requestCategory, POI } from "./placemark-types";
+import type { Category, POI } from "./placemark-types";
 
 export const placemarkService = {
   baseURL: "http://localhost:3000",
@@ -33,7 +33,6 @@ export const placemarkService = {
     localStorage.removeItem("placemark");
   },
   async signup(fName: string, lName: string, email: string, pwd: string): Promise<boolean> {
-    console.log("sign up transaction starting");
     try {
       const userDetails = {
         firstName: fName,
@@ -64,7 +63,7 @@ export const placemarkService = {
       }
     }
   },
-  async getCategory(catID: string): Promise<responseCategory | null> {
+  async getCategory(catID: string): Promise<Category | null> {
     console.log("starting transaction to get one category");
     try {
       const response = await axios.get(this.baseURL+"/api/categories/"+catID);
@@ -75,7 +74,7 @@ export const placemarkService = {
       return null;
     }
   },
-  async getCategories(): Promise<responseCategory[]> {
+  async getCategories(): Promise<Category[]> {
     try {
       console.log("requesting categories data from backend serivce");
       const response = await axios.get(this.baseURL+"/api/categories");
@@ -86,7 +85,7 @@ export const placemarkService = {
       return [];
     }
   },
-  async createCategory(category: requestCategory) {
+  async createCategory(category: Category) {
     try {
       console.log("sending category data to backend service", category);
       const request = await axios.post(this.baseURL+"/api/categories", category);
@@ -104,8 +103,15 @@ export const placemarkService = {
       console.log("transaction to delete category has completed");
       return response.status == 204;
     } catch (error) {
-      console.log("transation to delete cateogry failed w/ error message", error)
+      console.log("transation to delete cateogry failed w/ error message", error);
     }
+  },
+  async getCategoryByID(categoryID: string) {
+    try {
+      const response = await axios.get(this.baseURL+"/api/categories/"+categoryID);
+      console.log("get category by ID: "+categoryID, response);
+      return response.data;
+    } catch (error) { console.log("transaction to get category POI failed w/ error message"), error };
   },
   async getPOI() { // not functional yet
     return false;
@@ -113,10 +119,20 @@ export const placemarkService = {
   async getPOIs() { // not functional yet
     return false;
   },
-  async createPOI() { // not functional yet
-    return false;
+  async createPOI(categoryID: string, newPOI: POI) { // not functional yet
+    try {
+      console.log("starting transation to create new POI", newPOI);
+      const response = await axios.post(this.baseURL+"/api/categories/"+categoryID+"/pois", newPOI);
+      console.log("transaction to create new POI has completed", response);
+      return response.data;
+    } catch (error) { console.log(error) }
   },
-  async deletePOI() { // not functional yet
-    return false;
+  async deletePOI(pointID: string) {
+    try {
+      console.log("transaction to delete point of interest w/ ID: ", pointID);
+      const response = await axios.delete(this.baseURL+"/api/pois/"+pointID);
+      console.log(response);
+      return response.status == 204;
+    } catch (error) { console.log(error); }
   },
 }
