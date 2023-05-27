@@ -2,22 +2,29 @@
   import { placemarkService } from "../../services/placemark-service";
   import { categoryListStore, loggedInUser } from "../../stores";
 
-  let userInput = "";
+  let userInput: string = "";
+  let msg: string = "";
 
   async function createCategory() {
-    console.log("transaction starting to create new category");
-    if (userInput != "") {
-      let newCategory = {
-        type: userInput,
-        userid: $loggedInUser._id,
-        pois: [],
-      };
-      console.log("passing category data to placemark service");
-      await placemarkService.createCategory(newCategory);
-      categoryListStore.update((categories) => [...categories, newCategory]);
-      console.log("Category has been created");
-      userInput = "";
+    console.log("starting transaction to create new category");
+    if (userInput == "") { return msg = "category name cannot be empty"; }
+    console.log("debugging", $loggedInUser);
+    let newCategory = {
+      type: userInput,
+      userid: $loggedInUser._id,
+      //pois: [],
+    };
+    
+    try {
+      let response = await placemarkService.createCategory(newCategory);
+      categoryListStore.update((existingCategories) => [...existingCategories, response]);
+    } catch ( error ) { 
+      console.log(error);
+      return msg = "error creating category";
     }
+    
+    console.log("transaction to create category has been completed");
+    userInput = "";
   }
 </script>
 
@@ -31,3 +38,7 @@
   </div>
   <div class="box">{userInput}</div>
 </form>
+
+{#if msg}
+<div class="section">{msg}</div>
+{/if}

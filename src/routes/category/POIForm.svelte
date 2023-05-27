@@ -1,7 +1,5 @@
 <script lang="ts">
   import { placemarkService } from "../../services/placemark-service";
-  import type { POI } from "../../services/placemark-types";
-  import { loggedInUser } from "../../stores";
   import { openedCategoryID, POIlistStore } from "../../stores";
 
   let name: string = "";
@@ -28,14 +26,28 @@
       description: desc,
       latitude: latFloat,
       longitude: lngFloat,
+      categoryid: categoryID,
     }
 
     try {
-      await placemarkService.createPOI(categoryID, newPOI);
-      console.log("POIlistStore before update", $POIlistStore);
-      POIlistStore.update((currentPOIs) => [...currentPOIs, newPOI]);
-      console.log("POIlistStore after update", $POIlistStore);
-    } catch (error) {}
+      let response = await placemarkService.createPOI(categoryID, newPOI);
+      console.log("POIForm.createPOI.response", response);
+      if (response.status == 201) { 
+        newPOI._id = response.data._id;
+        console.log("POIForm.createPOI.newPOI", newPOI);
+        POIlistStore.update((currentPOIs) => [...currentPOIs, newPOI]); 
+        console.log("POIForm.createPOI.update.POIlistStore", $POIlistStore);
+      }
+    } catch (error) { 
+      console.log(error);
+      return msg = "error creating POI";
+    }
+
+    // set value back to empty after successful POI creation
+    name = "";
+    desc = "";
+    lat = "";
+    lng = "";
   }
 </script>
 

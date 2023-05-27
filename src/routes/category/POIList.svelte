@@ -1,38 +1,53 @@
 <script lang="ts">
   import { openedCategoryID, POIlistStore } from "../../stores";
   import type { Category, POI } from "../../services/placemark-types";
-  import { onMount } from "svelte";
+  import { onMount, onDestroy } from "svelte";
 	import { placemarkService } from "../../services/placemark-service";
 	import Icon from "@iconify/svelte";
 
-  export let category: Category[] = [];
+  let category: Category;
+  let categoryID: string; // store current category
   let POIs: POI[] = [];
-  let categoryID: string = ""; // Declare a variable to hold the current value of openedCategoryID
+  let isGetCategoryComplete: boolean;
+  
+  onMount(async () => {
+    $POIlistStore = [];
+    isGetCategoryComplete = false
+    openedCategoryID.subscribe(async (ID) => {
+      categoryID = ID;
+      await updatePOIs();
+      isGetCategoryComplete = true;
+    })
+    if (isGetCategoryComplete) {
+      POIlistStore.subscribe(() => {
+      POIs = $POIlistStore;
+      console.log("POIList.onMount.POIlistStore.subscribe.POIs", POIs);
+    })}
+  })
 
-  const updatePOIs = async () => {
-    categoryID = $openedCategoryID;
+  async function updatePOIs() {
     category = await placemarkService.getCategoryByID(categoryID);
-    POIs = category.pois;
+    console.log("POIList.updatePOIs.get.category", category);
+    if (category.pois == undefined) { return POIlistStore.set([]); } 
+    else { 
+      const categoryPOI = category.pois.filter((poi) => poi.categoryid === categoryID);
+      POIlistStore.set(categoryPOI); 
+    }
+    
+    console.log("POIList.updatePOIs.set.POIlistStore", $POIlistStore);
+    POIs = $POIlistStore;
+    console.log("POIList.updatePOIs.set.POIs", POIs);
   }
-
-  onMount(updatePOIs);
 
   async function deletePOI(pointID: string) {
     try {
       const success = await placemarkService.deletePOI(pointID);
-      if (success) { 
-        POIs = POIs.filter(poi => poi._id !== pointID); // filter out deleted POI from list
-        POIlistStore.set(POIs);
-      }
+      if (success) { updatePOIs(); }
     } catch (error) {}
   };
-
-  POIlistStore.subscribe(async (latestPOI) => {
-    POIs = latestPOI;
-    await updatePOIs();
-  })
 </script>
 
+{#if isGetCategoryComplete}
 <table class="table is-fullwidth">
   <thead>
     <tr>
@@ -51,7 +66,7 @@
         <td>{poi.latitude}</td>
         <td>{poi.longitude}</td>
         <td>
-          <button class="button is-link is-light" on:click={() => poi._id && deletePOI(poi._id)}>
+          <button class="button is-link is-light" on:click={() => deletePOI(poi._id)}>
             <span class="icon is-small"><Icon icon="ic:baseline-delete" width="25"/></span>
             &emsp;Delete POI
           </button>
@@ -60,3 +75,6 @@
     {/each}
   </tbody>
 </table>
+{:else}
+<div class="has-text-centered">Loading page...</div>
+{/if}

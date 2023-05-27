@@ -5,7 +5,7 @@ import type { Category, POI } from "./placemark-types";
 export const placemarkService = {
   baseURL: "http://localhost:3000",
   async login(email: string, password: string): Promise<boolean> {
-    console.log("login transaction starting");
+    console.log("transaction to authenticate user - in progress");
     try {
       const response = await axios.post(`${this.baseURL}/api/users/authenticate`, {email, password});
       console.log("logged user response", response);
@@ -14,10 +14,10 @@ export const placemarkService = {
         loggedInUser.set({
           email: email,
           token: response.data.token,
-          _id: response.data.id,
+          _id: response.data._id,
         });
-        localStorage.placemark = JSON.stringify({email: email, token: response.data.token});
-        console.log("login transaction completed");
+        localStorage.placemark = JSON.stringify({email: email, token: response.data.token, _id: response.data.id,});
+        console.log("transaction to authenticate user completed");
         return true;
       }
       console.log("authentication transaction failed");
@@ -54,20 +54,21 @@ export const placemarkService = {
       const placemarkCred = localStorage.placemark;
       if (placemarkCred) {
         const savedUser = JSON.parse(placemarkCred);
+        console.log(savedUser);
         loggedInUser.set({
           email: savedUser.email, 
           token: savedUser.token,
-          _id: savedUser._id
+          _id: savedUser._id,
         });
         axios.defaults.headers.common["Authorization"] = "Bearer " + savedUser.token;
       }
     }
   },
-  async getCategory(catID: string): Promise<Category | null> {
-    console.log("starting transaction to get one category");
+  async getCategory(categoryID: string): Promise<Category | null> {
+    console.log("starting transaction to get specific category");
     try {
-      const response = await axios.get(this.baseURL+"/api/categories/"+catID);
-      console.log("transaction to get specific category completed");
+      const response = await axios.get(this.baseURL+"/api/categories/"+categoryID);
+      console.log("transaction to get specific category has completed");
       return response.data;
     } catch (error) {
       console.log("transaction to get specific category failed w/ error message", error);
@@ -76,12 +77,25 @@ export const placemarkService = {
   },
   async getCategories(): Promise<Category[]> {
     try {
-      console.log("requesting categories data from backend serivce");
+      console.log("requesting all categories data from backend serivce");
       const response = await axios.get(this.baseURL+"/api/categories");
-      console.log("transaction to get categories completed", response.data);
+      console.log("transaction to get categories has completed", response.data);
       return response.data;
     } catch (error) {
-      console.log("transaction to get categories failed w/ error message", error);
+      console.log("transaction to get all categories failed w/ error message", error);
+      return [];
+    }
+  },
+  async getCategoryByUser(userID: string): Promise<Category[]> {
+    try {
+      console.log("requesting categories by user from backend serivce");
+      const requestCall = this.baseURL+"/api/users/"+userID+"/categories";
+      console.log(requestCall);
+      const response = await axios.get(requestCall);
+      console.log("transaction to get categories by user has completed", response.data);
+      return response.data;
+    } catch (error) {
+      console.log("transaction to get categories by user failed w/ error message", error);
       return [];
     }
   },
@@ -90,7 +104,7 @@ export const placemarkService = {
       console.log("sending category data to backend service", category);
       const request = await axios.post(this.baseURL+"/api/categories", category);
       console.log("transaction completed - category has been created");
-      return request.status == 200;
+      return request.data;
     } catch (error) { 
       console.log("transaction to create new category failed w/ error message", error);
       return false;
@@ -98,20 +112,31 @@ export const placemarkService = {
   },
   async deleteCategory(catID: string) {
     try {
+      console.log("transaction to delete category - in progress")
       const response = await axios.delete(this.baseURL+"/api/categories/"+catID);
       console.log(this.baseURL+"/api/categories/"+catID);
-      console.log("transaction to delete category has completed");
+      console.log("transaction to delete category - completed");
       return response.status == 204;
     } catch (error) {
-      console.log("transation to delete cateogry failed w/ error message", error);
+      console.log("transation to delete category - failed", error);
     }
   },
   async getCategoryByID(categoryID: string) {
     try {
       const response = await axios.get(this.baseURL+"/api/categories/"+categoryID);
-      console.log("get category by ID: "+categoryID, response);
+      console.log("get category data by ID: "+categoryID, response);
       return response.data;
     } catch (error) { console.log("transaction to get category POI failed w/ error message"), error };
+  },
+  async getCategoriesByUser(userID: string) {
+    try {
+      console.log("transaction to get categories by user ID:", userID);
+      const response = await axios.get(this.baseURL+"/api/users/"+userID+"/categories");
+      return response.data;
+    } catch (error) {
+      console.log("transaction to get categories by user has failed", error);
+      return [];
+    }
   },
   async getPOI() { // not functional yet
     return false;
@@ -119,12 +144,12 @@ export const placemarkService = {
   async getPOIs() { // not functional yet
     return false;
   },
-  async createPOI(categoryID: string, newPOI: POI) { // not functional yet
+  async createPOI(categoryID: string, newPOI: POI) {
     try {
-      console.log("starting transation to create new POI", newPOI);
-      const response = await axios.post(this.baseURL+"/api/categories/"+categoryID+"/pois", newPOI);
-      console.log("transaction to create new POI has completed", response);
-      return response.data;
+      console.log("transaction to create new POI - in progress \nCategory ID: ", categoryID, "\nPOI", newPOI);
+      const response = await axios.post(this.baseURL+"/api/category/pois", {categoryID, newPOI});
+      console.log("transaction to create new POI - completed", response);
+      return response;
     } catch (error) { console.log(error) }
   },
   async deletePOI(pointID: string) {
