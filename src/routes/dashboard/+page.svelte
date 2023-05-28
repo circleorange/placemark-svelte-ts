@@ -7,7 +7,7 @@
 	import CategoryList from "./CategoryList.svelte";
 	import LeafletMap from "$lib/LeafletMap.svelte";
   import { getMarkerLayer } from "../../services/placemark-utils";
-  import { allPlacemarksStore } from "../../stores";
+  import { allPlacemarksStore, categoryListStore } from "../../stores";
 
   let map: LeafletMap;
 

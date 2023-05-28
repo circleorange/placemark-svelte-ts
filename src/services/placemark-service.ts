@@ -164,4 +164,12 @@ export const placemarkService = {
       return response.status == 204;
     } catch (error) { console.log("placemarkService.deletePOI.error", error); }
   },
+  async uploadPlacemarkImage(placemarkID: string, fileinput) {
+    try {
+      return await axios.post(this.baseURL+"/api/placemark/upload-image", placemarkID, fileinput);
+
+    } catch (err) {
+      console.log("services.placemarkService.uploadPlacemarkImage.error", err);
+    }
+  }
 }

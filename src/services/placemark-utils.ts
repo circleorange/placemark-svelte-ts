@@ -2,7 +2,6 @@ import { LatLng } from "leaflet";
 import type { Category, CategoryPlacemarks, POI } from "./placemark-types";
 import type { MarkerLayer, MarkerSpec } from "./markers";
 import type { ChartData } from "./charts";
-import { categoryListStore, allPlacemarksStore } from "../stores";
 
 export function getMarkerLayer(POIs: POI[]): MarkerLayer {
   const markerSpecs = Array<MarkerSpec>();
@@ -35,13 +34,10 @@ export function generateByCategory(placemarksByCategory: CategoryPlacemarks[]): 
 
 export function getCategoriesAndPlacemarks(categories: Category[], placemarks: POI[]) {
   try {
-    // Create a copy of the categories array to avoid mutating the original array
     const categoriesWithPlacemarks = [...categories];
-    // Iterate over each placemark
     placemarks.forEach((placemark) => {
       const category = categoriesWithPlacemarks.find((category) => category._id === placemark.categoryid);
       if (category) {
-        // If the category is found, add the placemark to its placemark array
         if (!category.pois) { category.pois = []; }
         category.pois.push(placemark);
       }

@@ -1,9 +1,10 @@
 <script lang="ts">
   import { openedCategoryID, POIlistStore } from "../../stores";
   import type { Category, POI } from "../../services/placemark-types";
-  import { onMount, onDestroy } from "svelte";
+  import { onMount } from "svelte";
 	import { placemarkService } from "../../services/placemark-service";
 	import Icon from "@iconify/svelte";
+  import PlacemarkImage from "./PlacemarkImage.svelte";
 
   let category: Category;
   let categoryID: string; // store current category
@@ -17,11 +18,11 @@
       categoryID = ID;
       await updatePOIs();
       isGetCategoryComplete = true;
-      console.log("POIList.onMount.openedCategoryID.subscribe.categoryID", categoryID);
+      console.log("routes.category.POIList.onMount.openedCategoryID.subscribe.categoryID", categoryID);
     })
     POIlistStore.subscribe(() => {
       POIs = $POIlistStore;
-      console.log("POIList.onMount.POIlistStore.subscribe.POIs", POIs);
+      console.log("routes.category.POIList.onMount.POIlistStore.subscribe.POIs", POIs);
     })
   })
 
@@ -33,10 +34,8 @@
       const categoryPOI = category.pois.filter((poi) => poi.categoryid === categoryID);
       POIlistStore.set(categoryPOI); 
     }
-    
-    console.log("POIList.updatePOIs.set.POIlistStore", $POIlistStore);
     POIs = $POIlistStore;
-    console.log("POIList.updatePOIs.set.POIs", POIs);
+    console.log("routes.category.POIList.updatePOIs.set.POIs", POIs);
   }
 
   async function deletePOI(pointID: string) {
@@ -55,7 +54,7 @@
       <th>Description</th>
       <th>Latitude</th>
       <th>Longitude</th>
-      <th>Action</th>
+      <th>Actions</th>
     </tr>
   </thead>
   <tbody>
@@ -68,10 +67,20 @@
         <td>
           <button class="button is-link is-light" on:click={() => deletePOI(poi._id)}>
             <span class="icon is-small"><Icon icon="ic:baseline-delete" width="25"/></span>
-            &emsp;Delete POI
+            &emsp;Delete Placemark
           </button>
+          <button class="button is-link is-light" on:click={() => deleteImage()}>
+            <span class="icon is-small"><Icon icon="ic:baseline-delete" width="25"/></span>
+            &emsp;Delete Image
+          </button>
+          
         </td>
       </tr>
+      <td colspan="5" class="has-text-centered">
+        <div class="is-flex is-justify-content-center">
+          <PlacemarkImage placemark={poi} />
+        </div>
+      </td>
     {/each}
   </tbody>
 </table>

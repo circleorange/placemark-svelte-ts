@@ -26,6 +26,7 @@ export interface POI {
   longitude: number;
   categoryid: string;
   _id?: string; 
+  img?: string;
 }
 
 
