@@ -5,10 +5,9 @@ import type { Category, POI } from "./placemark-types";
 export const placemarkService = {
   baseURL: "http://localhost:3000",
   async login(email: string, password: string): Promise<boolean> {
-    console.log("transaction to authenticate user - in progress");
     try {
       const response = await axios.post(`${this.baseURL}/api/users/authenticate`, {email, password});
-      console.log("logged user response", response);
+      console.log("placemarkService.login.response", response);
       axios.defaults.headers.common["Authorization"] = "Bearer " + response.data.token;
       if (response.data.success) { 
         loggedInUser.set({
@@ -17,14 +16,11 @@ export const placemarkService = {
           _id: response.data._id,
         });
         localStorage.placemark = JSON.stringify({email: email, token: response.data.token, _id: response.data.id,});
-        console.log("transaction to authenticate user completed");
         return true;
-      }
-      console.log("authentication transaction failed");
-      return false;
+      } return false;
     } catch (error) {
-      console.log(error);
-      return false
+      console.log("placemarkService.login.error", error);
+      return false;
     }
   },
   async logout() {
@@ -40,11 +36,11 @@ export const placemarkService = {
         email: email,
         password: pwd
       };
-      await axios.post(`${this.baseURL}/api/users`, userDetails);
-      console.log("sign up transaction completed");
+      const response = await axios.post(`${this.baseURL}/api/users`, userDetails);
+      console.log("placemarkService.signup.response", response);
       return true;
-    } catch (errror) {
-      console.log("sign up transaction failed");
+    } catch (error) {
+      console.log("placemarkService.signup.error", error);
       return false;
     }
   },
@@ -65,99 +61,104 @@ export const placemarkService = {
     }
   },
   async getCategory(categoryID: string): Promise<Category | null> {
-    console.log("starting transaction to get specific category");
     try {
       const response = await axios.get(this.baseURL+"/api/categories/"+categoryID);
-      console.log("transaction to get specific category has completed");
+      console.log("placemarkService.getCategory.response", response.data);
       return response.data;
     } catch (error) {
-      console.log("transaction to get specific category failed w/ error message", error);
+      console.log("placemarkService.getCategory.error", error);
       return null;
     }
   },
   async getCategories(): Promise<Category[]> {
     try {
-      console.log("requesting all categories data from backend serivce");
       const response = await axios.get(this.baseURL+"/api/categories");
-      console.log("transaction to get categories has completed", response.data);
+      console.log("placemarkService.getCategories.response", response.data);
       return response.data;
     } catch (error) {
-      console.log("transaction to get all categories failed w/ error message", error);
+      console.log("placemarkService.getCategories.error", error);
       return [];
     }
   },
   async getCategoryByUser(userID: string): Promise<Category[]> {
     try {
-      console.log("requesting categories by user from backend serivce");
+      console.log("placemarkService.getCategoryByUser.request", userID);
       const requestCall = this.baseURL+"/api/users/"+userID+"/categories";
-      console.log(requestCall);
       const response = await axios.get(requestCall);
-      console.log("transaction to get categories by user has completed", response.data);
+      console.log("placemarkService.getCategoryByUser.response", response.data);
       return response.data;
     } catch (error) {
-      console.log("transaction to get categories by user failed w/ error message", error);
+      console.log("placemarkService.getCategoryByUser.error", error);
       return [];
     }
   },
   async createCategory(category: Category) {
     try {
-      console.log("sending category data to backend service", category);
+      console.log("placemarkService.createCategory.request", category);
       const request = await axios.post(this.baseURL+"/api/categories", category);
-      console.log("transaction completed - category has been created");
+      console.log("placemarkService.createCategory.response", request.data);
       return request.data;
     } catch (error) { 
-      console.log("transaction to create new category failed w/ error message", error);
+      console.log("placemarkService.createCategory.error", error);
       return false;
     }
   },
   async deleteCategory(catID: string) {
     try {
-      console.log("transaction to delete category - in progress")
+      console.log("placemarkService.deleteCategory.request", catID);
       const response = await axios.delete(this.baseURL+"/api/categories/"+catID);
-      console.log(this.baseURL+"/api/categories/"+catID);
-      console.log("transaction to delete category - completed");
+      console.log("placemarkService.deleteCategory.response", response);
       return response.status == 204;
     } catch (error) {
-      console.log("transation to delete category - failed", error);
+      console.log("placemarkService.deleteCategory.error", error);
     }
   },
   async getCategoryByID(categoryID: string) {
     try {
+      console.log("placemarkService.getCategoryByID.request", categoryID);
       const response = await axios.get(this.baseURL+"/api/categories/"+categoryID);
-      console.log("get category data by ID: "+categoryID, response);
+      console.log("placemarkService.getCategoryByID.response", response.data);
       return response.data;
-    } catch (error) { console.log("transaction to get category POI failed w/ error message"), error };
+    } catch (error) { console.log("placemarkService.getCategoryByID.error", error); };
   },
   async getCategoriesByUser(userID: string) {
     try {
-      console.log("transaction to get categories by user ID:", userID);
+      console.log("placemarkService.getCategoriesByUser.request", userID);
       const response = await axios.get(this.baseURL+"/api/users/"+userID+"/categories");
+      console.log("placemarkService.getCategoriesByUser.response", response.data);
       return response.data;
     } catch (error) {
-      console.log("transaction to get categories by user has failed", error);
+      console.log("placemarkService.getCategoriesByUser.error", error);
       return [];
     }
   },
   async getPOI() { // not functional yet
     return false;
   },
-  async getPOIs() { // not functional yet
-    return false;
+  async getAllPlacemarks() { // not functional yet
+    try {
+      const response = await axios.get(this.baseURL+"/api/pois");
+      console.log("placemarkService.getAllPlacemarks.response", response);
+      return response.data;
+    } catch (error) {
+      console.log("placemarkService.getAllPlacemarks.error", error);
+      return [];
+    }
   },
   async createPOI(categoryID: string, newPOI: POI) {
     try {
-      console.log("transaction to create new POI - in progress \nCategory ID: ", categoryID, "\nPOI", newPOI);
+      console.log("placemarkService.createPOI.request", categoryID, newPOI);
       const response = await axios.post(this.baseURL+"/api/category/pois", {categoryID, newPOI});
-      console.log("transaction to create new POI - completed", response);
+      console.log("placemarkService.createPOI.response", response);
       return response;
-    } catch (error) { console.log(error) }
+    } catch (error) { console.log("placemarkService.createPOI.error", error); }
   },
   async deletePOI(pointID: string) {
     try {
-      console.log("transaction to delete point of interest w/ ID: ", pointID);
+      console.log("placemarkService.deletePOI.request", pointID);
       const response = await axios.delete(this.baseURL+"/api/pois/"+pointID);
-      console.log(response);
+      console.log("placemarkService.deletePOI.response", response);
       return response.status == 204;
-    } catch (error) { console.log(error); }
+    } catch (error) { console.log("placemarkService.deletePOI.error", error); }
   },
 }

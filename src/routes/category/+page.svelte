@@ -14,4 +14,3 @@
 <Header><MainNav /></Header>
 <div class="box"><POIList /></div>
 <div class="box"><POIForm /></div>
-

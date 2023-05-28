@@ -17,12 +17,12 @@
       categoryID = ID;
       await updatePOIs();
       isGetCategoryComplete = true;
+      console.log("POIList.onMount.openedCategoryID.subscribe.categoryID", categoryID);
     })
-    if (isGetCategoryComplete) {
-      POIlistStore.subscribe(() => {
+    POIlistStore.subscribe(() => {
       POIs = $POIlistStore;
       console.log("POIList.onMount.POIlistStore.subscribe.POIs", POIs);
-    })}
+    })
   })
 
   async function updatePOIs() {
