@@ -9,3 +9,4 @@ export const categoryListStore = writable<Category[]>([]);
 export const openedCategoryID = writable<string>();
 export const POIlistStore = writable<POI[]>([]);
 export const markerSelected = writable<MarkerSpec>();
+export const allPlacemarksStore = writable<POI[]>([]);

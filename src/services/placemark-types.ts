@@ -27,3 +27,9 @@ export interface POI {
   categoryid: string;
   _id?: string; 
 }
+
+
+export interface CategoryPlacemarks {
+  type: Category;
+  pois: POI[];
+}

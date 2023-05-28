@@ -113,6 +113,7 @@ export const placemarkService = {
       console.log("placemarkService.deleteCategory.error", error);
     }
   },
+  // returns category w/ placemarks array
   async getCategoryByID(categoryID: string) {
     try {
       console.log("placemarkService.getCategoryByID.request", categoryID);
@@ -121,6 +122,7 @@ export const placemarkService = {
       return response.data;
     } catch (error) { console.log("placemarkService.getCategoryByID.error", error); };
   },
+  // returns categories w/o placemarks
   async getCategoriesByUser(userID: string) {
     try {
       console.log("placemarkService.getCategoriesByUser.request", userID);
@@ -135,7 +137,8 @@ export const placemarkService = {
   async getPOI() { // not functional yet
     return false;
   },
-  async getAllPlacemarks() { // not functional yet
+  // returns array of placemarks
+  async getAllPlacemarks() {
     try {
       const response = await axios.get(this.baseURL+"/api/pois");
       console.log("placemarkService.getAllPlacemarks.response", response);

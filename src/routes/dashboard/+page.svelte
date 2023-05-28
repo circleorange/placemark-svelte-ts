@@ -7,14 +7,15 @@
 	import CategoryList from "./CategoryList.svelte";
 	import LeafletMap from "$lib/LeafletMap.svelte";
   import { getMarkerLayer } from "../../services/placemark-utils";
+  import { allPlacemarksStore } from "../../stores";
 
   let map: LeafletMap;
 
   onMount(async () => {
     const placemarks = await placemarkService.getAllPlacemarks();
+    allPlacemarksStore.set(placemarks);
     const placemarkMarkerLayer = getMarkerLayer(placemarks);
     map.populateLayer(placemarkMarkerLayer);
-
   })
 
   // Store user token before browser page reload to prevent signing out
